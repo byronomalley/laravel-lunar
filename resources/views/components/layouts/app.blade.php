@@ -13,6 +13,7 @@
         @livewireStyles
     </head>
     <body>
+        @livewire('navigation')
         <main>
             {{ $slot }}
         </main>
