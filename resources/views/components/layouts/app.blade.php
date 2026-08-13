@@ -13,7 +13,10 @@
         @livewireStyles
     </head>
     <body>
-        {{ $slot }}
+        <main>
+            {{ $slot }}
+        </main>
+        <x-footer />
 
         @livewireScripts
     </body>
