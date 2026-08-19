@@ -2,15 +2,13 @@
 
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
 use Lunar\Facades\CartSession;
 use Lunar\Facades\Payments;
 use Lunar\Facades\ShippingManifest;
 use Lunar\Models\Cart;
-use Lunar\Models\CartAddress;
 use Lunar\Models\Country;
-use Livewire\Attributes\Layout;
-use Livewire\Volt\Component;
-
 
 new
 #[Layout('components.layouts.app')]
@@ -22,14 +20,14 @@ class extends Component
     public ?Cart $cart;
 
     /**
-     * The shipping address instance.
+     * The shipping address data.
      */
-    public ?CartAddress $shipping = null;
+    public array $shipping = [];
 
     /**
-     * The billing address instance.
+     * The billing address data.
      */
-    public ?CartAddress $billing = null;
+    public array $billing = [];
 
     /**
      * The current checkout step.
@@ -115,9 +113,19 @@ class extends Component
         }
 
         // Do we have a shipping address?
-        $this->shipping = $this->cart->shippingAddress ?: new CartAddress;
+        if ($this->cart->shippingAddress) {
+            $this->shipping = $this->cart->shippingAddress->only(
+                $this->cart->shippingAddress->getFillable()
+            );
+            $this->shipping['country'] = $this->cart->shippingAddress->country;
+        }
 
-        $this->billing = $this->cart->billingAddress ?: new CartAddress;
+        if ($this->cart->billingAddress) {
+            $this->billing = $this->cart->billingAddress->only(
+                $this->cart->billingAddress->getFillable()
+            );
+            $this->billing['country'] = $this->cart->billingAddress->country;
+        }
 
         $this->determineCheckoutStep();
     }
@@ -202,30 +210,29 @@ class extends Component
             $this->getAddressValidation($type)
         );
 
-        $address = $this->{$type};
+        $address = $validatedData[$type];
 
         if ($type == 'billing') {
             $this->cart->setBillingAddress($address);
-            $this->billing = $this->cart->billingAddress;
+            $this->billing = $this->cart->billingAddress->only(
+                $this->cart->billingAddress->getFillable()
+            );
+            $this->billing['country'] = $this->cart->billingAddress->country;
         }
 
         if ($type == 'shipping') {
             $this->cart->setShippingAddress($address);
-            $this->shipping = $this->cart->shippingAddress;
+            $this->shipping = $this->cart->shippingAddress->only(
+                $this->cart->shippingAddress->getFillable()
+            );
+            $this->shipping['country'] = $this->cart->shippingAddress->country;
 
             if ($this->shippingIsBilling) {
-                // Do we already have a billing address?
-                if ($billing = $this->cart->billingAddress) {
-                    $billing->fill($validatedData['shipping']);
-                    $this->cart->setBillingAddress($billing);
-                } else {
-                    $address = $address->only(
-                        $address->getFillable()
-                    );
-                    $this->cart->setBillingAddress($address);
-                }
-
-                $this->billing = $this->cart->billingAddress;
+                $this->cart->setBillingAddress($address);
+                $this->billing = $this->cart->billingAddress->only(
+                    $this->cart->billingAddress->getFillable()
+                );
+                $this->billing['country'] = $this->cart->billingAddress->country;
             }
         }
 

@@ -139,30 +139,30 @@
                                 </dt>
 
                                 <dd class="mt-0.5">
-                                    {{ $this->{$type}->first_name }} {{ $this->{$type}->last_name }}
+                                    {{ $this->{$type}['first_name'] }} {{ $this->{$type}['last_name'] }}
                                 </dd>
                             </div>
 
-                            @if ($this->{$type}->company_name)
+                            @if (!empty($this->{$type}['company_name']))
                                 <div>
                                     <dt class="font-medium">
                                         Company
                                     </dt>
 
                                     <dd class="mt-0.5">
-                                        {{ $this->{$type}->company_name }}
+                                        {{ $this->{$type}['company_name'] }}
                                     </dd>
                                 </div>
                             @endif
 
-                            @if ($this->{$type}->contact_phone)
+                            @if (!empty($this->{$type}['contact_phone']))
                                 <div>
                                     <dt class="font-medium">
                                         Phone Number
                                     </dt>
 
                                     <dd class="mt-0.5">
-                                        {{ $this->{$type}->contact_phone }}
+                                        {{ $this->{$type}['contact_phone'] }}
                                     </dd>
                                 </div>
                             @endif
@@ -173,7 +173,7 @@
                                 </dt>
 
                                 <dd class="mt-0.5">
-                                    {{ $this->{$type}->contact_email }}
+                                    {{ $this->{$type}['contact_email'] }}
                                 </dd>
                             </div>
                         </div>
@@ -185,21 +185,21 @@
                         </dt>
 
                         <dd class="mt-0.5">
-                            {{ $this->{$type}->line_one }}<br>
-                            @if ($this->{$type}->line_two)
-                                {{ $this->{$type}->line_two }}<br>
+                            {{ $this->{$type}['line_one'] }}<br>
+                            @if (!empty($this->{$type}['line_two']))
+                                {{ $this->{$type}['line_two'] }}<br>
                             @endif
-                            @if ($this->{$type}->line_three)
-                                {{ $this->{$type}->line_three }}<br>
+                            @if (!empty($this->{$type}['line_three']))
+                                {{ $this->{$type}['line_three'] }}<br>
                             @endif
-                            @if ($this->{$type}->city)
-                                {{ $this->{$type}->city }}<br>
+                            @if (!empty($this->{$type}['city']))
+                                {{ $this->{$type}['city'] }}<br>
                             @endif
-                            @if ($this->{$type}->state)
-                                {{ $this->{$type}->state }}<br>
+                            @if (!empty($this->{$type}['state']))
+                                {{ $this->{$type}['state'] }}<br>
                             @endif
-                            {{ $this->{$type}->postcode }}<br>
-                            {{ $this->{$type}->country?->native }}
+                            {{ $this->{$type}['postcode'] }}<br>
+                            {{ $this->{$type}['country']?->native }}
                         </dd>
                     </div>
                 </dl>
