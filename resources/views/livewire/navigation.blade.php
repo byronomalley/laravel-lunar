@@ -28,7 +28,7 @@ new class extends Component {
 } ?>
 
 <header class="relative border-b border-gray-100">
-    <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
+    <div class="max-w-screen-xl px-4 py-12 mx-auto sm:px-6 lg:px-8 flex items-center justify-between h-16 px-4">
         <div class="flex items-center">
             <a class="flex items-center flex-shrink-0"
                href="{{ url('/') }}"
@@ -42,7 +42,7 @@ new class extends Component {
             <nav class="hidden lg:gap-4 lg:flex lg:ml-8">
                 @foreach ($this->collections as $collection)
                     <a class="text-sm font-medium transition hover:opacity-75"
-{{--                       href="{{ route('collection.view', $collection->defaultUrl->slug) }}"--}}
+                       href="{{ route('collection.view', $collection->defaultUrl->slug) }}"
                        wire:navigate
                     >
                         {{ $collection->translateAttribute('name') }}

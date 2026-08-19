@@ -125,7 +125,7 @@ class extends Component {
                             <div class="aspect-w-1 aspect-h-1"
                                  wire:key="image_{{ $image->id }}">
                                 <img loading="lazy"
-                                     class="object-cover rounded-xl"
+                                     class="object-cover h-50 w-full rounded-xl"
                                      src="{{ $image->getUrl() }}"
                                      alt="{{ $this->product->translateAttribute('name') }}" />
                             </div>
@@ -139,8 +139,9 @@ class extends Component {
                             {{ $this->product->translateAttribute('name') }}
                         </h1>
 
-                        <livewire:product-price :product="$this->product" class="ml-4 font-medium" />
                     </div>
+
+                    <livewire:product-price :product="$this->product" class="ml-4 font-medium" />
 
                     <p class="mt-1 text-sm text-gray-500">
                         {{ $this->variant->sku }}
