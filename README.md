@@ -28,4 +28,16 @@ docs: https://docs.lunarphp.com/1.x/addons/table-rate-shipping
 
 `config/services.php`
 
-docs: https://docs.lunarphp.com/1.x/addons/payments/stripe
+**Articles**
+
+- docs: https://docs.lunarphp.com/1.x/addons/payments/stripe
+- API Keys: https://docs.stripe.com/keys
+
+## Server
+
+The server is hosted on IONOS: https://login.ionos.co.uk/
+
+**Articles**
+
+- Installing Docker on Linux Server: https://www.ionos.com/digitalguide/server/know-how/installing-and-running-docker-on-a-linux-server/
+- Docker Compose: https://www.ionos.co.uk/digitalguide/server/configuration/docker-compose-tutorial/

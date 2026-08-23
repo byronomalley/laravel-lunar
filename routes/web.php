@@ -1,8 +1,13 @@
 <?php
 
 use Livewire\Volt\Volt;
+use Illuminate\Support\Facades\Route;
 
-Volt::route('/', 'welcome')->name('home');
+//Volt::route('/', 'welcome')->name('home');
+
+Route::get('/', function () {
+    return redirect('/collections/main');
+});
 
 Volt::route('/products/{slug}', 'product-page')->name('product.view');
 
