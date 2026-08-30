@@ -5,30 +5,33 @@ use Lunar\Models\Product;
 use Lunar\Search\Facades\Search;
 
 new class extends Component {
+
     public string $search = '';
     public $results = [];
     public bool $linesVisible = false;
 
-    public function query()
+    public function updatedSearch()
     {
-        $product =  Product::search($this->search)->get();
-        $this->results = $product;
-        $this->linesVisible = true;
+        if (filled($this->search)) {
+            $this->results = Product::search($this->search)->get();
+            $this->linesVisible = true;
+        } else {
+            $this->results = [];
+        }
     }
 }
 ?>
 
 <form class="relative"
-    {{--      action="{{ route('search.view') }}"--}}
-    x-data="{
+      {{--      action="{{ route('search.view') }}"--}}
+      x-data="{
          linesVisible: @entangle('linesVisible').live
      }">
-    <input name="query"
+    <input name="search"
            type="search"
            placeholder="Search for products"
            class="w-full pl-10 text-sm border-2 border-gray-100 rounded-lg"
-           wire:model.live="search"
-           wire:change.debounce.100="query"
+           wire:model.live.debounce.250ms="search" {{-- Livewire handles timing and execution now --}}
            @click="linesVisible = true"
     />
 
@@ -47,18 +50,19 @@ new class extends Component {
         </svg>
     </button>
 
-        <div class="absolute inset-x-0 top-auto z-50 w-screen max-w-sm px-6 py-8 mx-auto mt-4 bg-white border border-gray-100 shadow-xl sm:left-auto rounded-xl"
-             x-show="$wire.search.length > 0 && linesVisible"
-             x-on:click.away="linesVisible = false"
-             x-transition
-             x-cloak>
-            @if($results)
+    <div
+        class="absolute inset-x-0 top-auto z-50 w-screen max-w-sm px-6 py-8 mx-auto mt-4 bg-white border border-gray-100 shadow-xl sm:left-auto rounded-xl"
+        x-show="$wire.search.length > 0 && linesVisible"
+        x-on:click.away="linesVisible = false"
+        x-transition
+        x-cloak>
+        @if($results)
             @foreach($results as $result)
                 <a href="{{ route('product.view', $result->defaultUrl->slug) }} }}">{{$result->variants->first()?->sku . ' ' . $result->translateAttribute('name')}}</a>
             @endforeach
-            @else
-                <p>No Results</p>
-            @endif
-        </div>
+        @else
+            <p>No Results</p>
+        @endif
+    </div>
 </form>
 
