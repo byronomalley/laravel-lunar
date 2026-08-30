@@ -8,7 +8,8 @@
         @if ($product->thumbnail)
             <img class="object-cover bg-white h-80 w-full transition-transform duration-300 group-hover:scale-105"
                  src="{{ $product->thumbnail->getUrl() }}"
-                 alt="{{ $product->translateAttribute('name') }}" />
+                 alt="{{ $product->translateAttribute('name') }}"
+            />
         @endif
     </div>
 

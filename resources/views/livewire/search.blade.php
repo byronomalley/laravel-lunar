@@ -8,15 +8,18 @@ new class extends Component {
 
     public string $search = '';
     public $results = [];
+    public bool $hasSearched = false;
     public bool $linesVisible = false;
 
     public function updatedSearch()
     {
         if (filled($this->search)) {
             $this->results = Product::search($this->search)->get();
+            $this->hasSearched = true;
             $this->linesVisible = true;
         } else {
             $this->results = [];
+            $this->hasSearched = false;
         }
     }
 }
@@ -31,7 +34,7 @@ new class extends Component {
            type="search"
            placeholder="Search for products"
            class="w-full pl-10 text-sm border-2 border-gray-100 rounded-lg"
-           wire:model.live.debounce.250ms="search" {{-- Livewire handles timing and execution now --}}
+           wire:model.live.debounce.150ms="search" {{-- Livewire handles timing and execution now --}}
            @click="linesVisible = true"
     />
 
@@ -55,14 +58,32 @@ new class extends Component {
         x-show="$wire.search.length > 0 && linesVisible"
         x-on:click.away="linesVisible = false"
         x-transition
-        x-cloak>
-        @if($results)
-            @foreach($results as $result)
-                <a href="{{ route('product.view', $result->defaultUrl->slug) }} }}">{{$result->variants->first()?->sku . ' ' . $result->translateAttribute('name')}}</a>
-            @endforeach
-        @else
-            <p>No Results</p>
-        @endif
+        x-cloak
+    >
+        <div wire:loading wire:target="search">
+            <p class="text-sm text-gray-400">Searching…</p>
+        </div>
+        <div wire:loading.remove wire:target="search">
+            @if($hasSearched && count($results))
+                <ul class="flex flex-col gap-1">
+                @foreach($results as $result)
+                    <li>
+                        <a href="{{ route('product.view', $result->defaultUrl->slug) }}" class="flex">
+                            @if ($result->thumbnail)
+                                <img class="object-cover w-1/3 overflow-hidden rounded-lg aspect-w-1 aspect-h-1"
+                                     src="{{ $result->thumbnail->getUrl() }}"
+                                     alt="{{ $result->translateAttribute('name') }}"
+                                />
+                            @endif
+                            <p>{{ $result->variants->first()?->sku . ' ' . $result->translateAttribute('name') }}</p>
+                        </a>
+                    </li>
+                @endforeach
+                </ul>
+            @elseif($hasSearched)
+                <p>No results found.</p>
+            @endif
+        </div>
     </div>
 </form>
 
