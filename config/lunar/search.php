@@ -39,9 +39,9 @@ return [
     |
     */
     'engine_map' => [
-        // Lunar\Models\Product::class => 'algolia',
-        // Lunar\Models\Order::class => 'meilisearch',
-        // Lunar\Models\Collection::class => 'meilisearch',
+//         Lunar\Models\Product::class => 'meilisearch',
+//         Lunar\Models\Order::class => 'meilisearch',
+//         Lunar\Models\Collection::class => 'meilisearch',
     ],
 
     'indexers' => [

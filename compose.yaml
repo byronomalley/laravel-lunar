@@ -1,12 +1,12 @@
 services:
     laravel.test:
         build:
-            context: './vendor/laravel/sail/runtimes/8.5'
+            context: ./vendor/laravel/sail/runtimes/8.5
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
                 MYSQL_CLIENT: mariadb-client
-        image: 'sail-8.5/app'
+        image: sail-8.5/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -24,6 +24,7 @@ services:
             - sail
         depends_on:
             - mariadb
+            - meilisearch
     mariadb:
         image: 'mariadb:11'
         ports:
@@ -48,9 +49,32 @@ services:
                 - '--innodb_initialized'
             retries: 3
             timeout: 5s
+    meilisearch:
+        image: 'getmeili/meilisearch:v1.53'
+        ports:
+            - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
+        environment:
+            MEILI_NO_ANALYTICS: '${MEILISEARCH_NO_ANALYTICS:-false}'
+            MEILI_UPGRADE_DB: '${MEILISEARCH_UPGRADE_DB:-true}'
+            MEILI_MASTER_KEY: '${MEILISEARCH_KEY:-masterKey}' # 👈 Add this line
+        volumes:
+            - 'sail-meilisearch:/meili_data'
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - wget
+                - '--no-verbose'
+                - '--spider'
+                - 'http://127.0.0.1:7700/health'
+            retries: 3
+            timeout: 5s
 networks:
     sail:
         driver: bridge
 volumes:
     sail-mariadb:
+        driver: local
+    sail-meilisearch:
         driver: local

@@ -41,3 +41,17 @@ The server is hosted on IONOS: https://login.ionos.co.uk/
 
 - Installing Docker on Linux Server: https://www.ionos.com/digitalguide/server/know-how/installing-and-running-docker-on-a-linux-server/
 - Docker Compose: https://www.ionos.co.uk/digitalguide/server/configuration/docker-compose-tutorial/
+
+## Search
+
+Scout and meilisearch
+
+config/scout.php
+
+Synchronise index settings
+
+php artisan scout:sync-index-settings
+
+**Articles**
+
+https://www.meilisearch.com/docs/getting_started/frameworks/laravel#local-development

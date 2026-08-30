@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use Lunar\Models\Product;
+use Lunar\Search\Facades\Search;
 
 new class extends Component {
     public string $search = '';
@@ -10,12 +11,8 @@ new class extends Component {
 
     public function query()
     {
-//        dd($this->search);
-        $this->results = Product::search($this->search)
-            ->where('status', 'published')
-            ->get()
-        ;
-
+        $product =  Product::search($this->search)->get();
+        $this->results = $product;
         $this->linesVisible = true;
     }
 }
@@ -31,7 +28,7 @@ new class extends Component {
            placeholder="Search for products"
            class="w-full pl-10 text-sm border-2 border-gray-100 rounded-lg"
            wire:model.live="search"
-           wire:change.debounce.300="query"
+           wire:change.debounce.100="query"
            @click="linesVisible = true"
     />
 
