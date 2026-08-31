@@ -1,0 +1,75 @@
+name: Setup
+
+description: Sets up PHP and Composer
+
+inputs:
+  php-version:
+    description: The PHP version(s) you wish to use.
+    required: true
+  php-extensions:
+    description: The PHP extensions you want to install.
+    required: false
+    default: dom, curl, libxml, mbstring, zip, pcntl, pdo, odbc, pdo_odbc, :php-psr
+  nova-email: # ${{ secrets.NOVA_EMAIL }} # You don't have access to secrets or variables in composite actions, so we use inputs
+    description: The email address for Laravel Nova authentication.
+    required: true
+  nova-password:
+    description: The password for Laravel Nova authentication.
+    required: true
+  coverage:
+    description: The coverage driver to use.
+    required: false
+    default: none
+
+runs:
+  using: composite
+  steps:
+    - name: Get PHP extension cache hash
+      id: get-cache-hash
+      run: echo hash=$(echo $PHP_VERSIONS | md5sum | awk '{print $1}') >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Setup cache environment
+      id: extcache
+      uses: shivammathur/cache-extensions@v1
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: ${{ inputs.php-extensions }}
+        key: php-extensions-${{ steps.get-cache-hash.outputs.hash }}
+
+    - name: Cache extensions
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.extcache.outputs.dir }}
+        key: ${{ steps.extcache.outputs.key }}
+        restore-keys: ${{ steps.extcache.outputs.key }}
+
+
+    - name: Setup PHP and Composer
+      uses: shivammathur/setup-php@2.35.5
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: ${{ inputs.php-extensions }}
+        tools: composer:v2
+        coverage: ${{ inputs.coverage }} # only use xdebug if you need it for code coverage
+
+
+    - name: Get Composer Cache Directory
+      id: composer-cache-dir
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Cache Composer Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache-dir.outputs.dir }}
+        key: composer-cache-${{ hashFiles('**/composer.lock') }}
+        restore-keys: composer-cache-
+
+    - name: Authenticate Nova
+      env:
+        # You don't have access to secrets or variables in composite actions, so we use inputs
+        NOVA_PASSWORD: ${{ inputs.nova-password }}
+        NOVA_EMAIL: ${{ inputs.nova-email }}
+      run: composer config http-basic.nova.laravel.com "NOVA_EMAIL" "$NOVA_PASSWORD"
+      shell: bash

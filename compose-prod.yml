@@ -44,11 +44,63 @@ services:
       timeout: 5s
       retries: 3
     # The 'depends_on' attribute with 'condition: service_healthy' ensures that
-    # this service will not start until the 'postgres' service passes its health check.
+    # this service will not start until the 'mariadb' service passes its health check.
     # This prevents the application from trying to connect to the database before it's ready.
     depends_on:
-      postgres:
+      mariadb:
         condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+
+  mariadb:
+    build:
+      context: './docker/production/mariadb'
+      dockerfile: Dockerfile
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+#      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+    restart: unless-stopped
+    volumes:
+      - 'laravel-db-mariadb:/var/lib/mysql'
+      - './docker/mariadb/mariadb-production.cnf:/etc/mysql/conf.d/custom.cnf:ro'
+    networks:
+      - laravel-production
+    healthcheck:
+      test:
+        - CMD
+        - healthcheck.sh
+        - '--connect'
+        - '--innodb_initialized'
+      retries: 3
+      timeout: 5s
+
+  meilisearch:
+    image: 'getmeili/meilisearch:v1.53'
+    ports:
+      - '${FORWARD_MEILISEARCH_PORT}:7700'
+    environment:
+      MEILI_NO_ANALYTICS: '${MEILISEARCH_NO_ANALYTICS}'
+      MEILI_UPGRADE_DB: '${MEILISEARCH_UPGRADE_DB}'
+      MEILI_MASTER_KEY: '${MEILISEARCH_KEY}' # 👈 Add this line
+    volumes:
+      - 'laravel-meilisearch:/meili_data'
+    restart: unless-stopped
+    networks:
+      - laravel-production
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - '--no-verbose'
+        - '--spider'
+        - 'http://127.0.0.1:7700/health'
+      retries: 3
+      timeout: 5s
 
   # The 'php-cli' service provides a command-line interface for running Artisan commands and other CLI tasks.
   # -----------------------------------------------------------
@@ -92,22 +144,6 @@ services:
 #      timeout: 5s
 #      retries: 5
 
-#  redis:
-#    image: redis:alpine
-#    restart: unless-stopped # Automatically restart unless the service is explicitly stopped
-#    networks:
-#      - laravel-production
-#    # Health check for Redis
-#    # -----------------------------------------------------------
-#    # Checks if Redis is responding to the 'PING' command.
-#    # This ensures that the service is not only running but also operational.
-#    # -----------------------------------------------------------
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-
 networks:
   # Attach the service to the 'laravel-production' network.
   # -----------------------------------------------------------
@@ -117,5 +153,9 @@ networks:
   laravel-production:
 
 volumes:
-#  postgres-data-production:
+  laravel-db-mariadb:
+    driver: local
+  laravel-meilisearch:
+    driver: local
   laravel-storage-production:
+

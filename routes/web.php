@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('/collections/main');
-});
+})->name('home');
 
 Volt::route('/products/{slug}', 'product-page')->name('product.view');
 

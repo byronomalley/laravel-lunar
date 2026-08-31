@@ -1,0 +1,54 @@
+name: Laravel Pint
+
+on:
+  push:
+    branches:
+      # If this is left on main, it could potentially create duplicate deployments: pull request is merged, main is updated,
+      # pint runs, pint makes changes, main is updated again, another deployment is created.
+      - main
+
+permissions:
+  pull-requests: write # Necessary to comment on PRs
+  actions: write       # Necessary to cancel workflow executions
+  packages: write
+  deployments: write
+  statuses: write
+  contents: write
+
+jobs:
+  laravel-pint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5.0.0
+        # Make sure the final git push works
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+        with:
+          php-version: '8.4'
+          php-extensions: 'json, dom, curl, libxml, mbstring'
+          nova-email: ${{ secrets.NOVA_EMAIL }}
+          nova-password: ${{ secrets.NOVA_PASSWORD }}
+
+      - name: Setup PHP and Composer
+        uses: shivammathur/setup-php@2.35.5
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install Laravel Pint
+        run: composer global require laravel/pint
+
+      - name: Run Laravel Pint
+        run: pint
+
+      - name: Push Changes Back To Repo
+        run: |
+          git config --global user.name "gh-actions"
+          git config --global user.email "byronomalley950@gmail.com"
+          git add .
+          git commit -m "Laravel Pint" || exit 0
+          git push

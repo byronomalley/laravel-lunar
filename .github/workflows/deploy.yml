@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - Laravel Pint
+    types:
+      - completed
+  release: # listen for releases to main branch (as implied by the Laravel Pint workflow)
+    types:
+      - published
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_run' && 'staging' || 'production' }}
+
+    steps:
+      - name: Deploy to Forge
+        env:
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+        run: echo $DEPLOY_URL

@@ -1,0 +1,55 @@
+name: Tests
+
+on:
+  pull_request
+
+permissions:
+  pull-requests: write # Necessary to comment on PRs
+  actions: write       # Necessary to cancel workflow executions
+  packages: write
+  deployments: write
+  statuses: write
+  contents: write
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:8.2
+        ports:
+          - 6379:6379
+
+      mariadb:
+        image: mariadb:11
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: 'laravel'
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5.0.0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+        with:
+          php-version: '8.4'
+          nova-email: ${{ secrets.NOVA_EMAIL }}
+          nova-password: ${{ secrets.NOVA_PASSWORD }}
+          coverage: xdebug # Enable xdebug for code coverage
+
+      - name: Install Dependencies
+        run: composer install -q --no-interaction
+
+      - name: Prep Application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          php artisan migrate
+
+      - name: Run Tests
+        run: php artisan test --compact --coverage --min=75
