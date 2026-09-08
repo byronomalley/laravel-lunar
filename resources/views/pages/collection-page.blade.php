@@ -36,7 +36,7 @@ class extends Component
 } ?>
 
 <section>
-    <div class="max-w-screen-xl px-4 py-12 mx-auto sm:px-6 lg:px-8">
+    <div class="app-container">
         <h1 class="text-3xl font-bold">
             {{ $this->collection->translateAttribute('name') }}
         </h1>

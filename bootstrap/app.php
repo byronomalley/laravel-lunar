@@ -12,7 +12,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Append your custom coming soon middleware to the web group
         $middleware->web(append: [
             ComingSoonMiddleware::class,
         ]);

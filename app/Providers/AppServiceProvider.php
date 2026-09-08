@@ -3,15 +3,14 @@
 namespace App\Providers;
 
 use Filament\Panel;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Lunar\Admin\Support\Facades\LunarPanel;
+use Lunar\Facades\Telemetry;
 use Lunar\Shipping\ShippingPlugin;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         LunarPanel::register();
@@ -20,11 +19,14 @@ class AppServiceProvider extends ServiceProvider
         })->register();
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        if (config('app.force_https')) {
+            URL::forceScheme('https');
+        }
+
+        if(!config('app.lunar_telemetry')) {
+            Telemetry::optOut();
+        }
     }
 }

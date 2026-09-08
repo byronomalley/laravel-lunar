@@ -131,4 +131,32 @@ return [
     */
     'coming_soon' => env('APP_COMING_SOON', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Force HTTPS
+    |--------------------------------------------------------------------------
+    |
+    | Make sure this is set to false for localhost.
+    |
+    | Although, when you're broadcasting your localhost
+    | site on a service like ngrok, it expects HTTPS, but the localhost
+    | Laravel app has no idea it is being accessed by ngrok. So in this case
+    | it should be 'true'.
+    |
+    */
+    'force_https' => env('APP_FORCE_HTTPS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lunar Telemetry Enabled
+    |--------------------------------------------------------------------------
+    |
+    | Lunar sends anonymous usage data once per day to help the maintainers
+    | understand how Lunar is used. The data does not identify a store in any
+    | way.
+    |
+    | Sometimes you'll have to disable this because it causes too many requests
+    | on the server.
+    */
+    'lunar_telemetry' => env('APP_LUNAR_TELEMETRY', false),
 ];

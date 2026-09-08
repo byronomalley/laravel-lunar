@@ -13,12 +13,15 @@
         @livewireStyles
     </head>
     <body>
-        @livewire('navigation')
+        @if($showNavigation ?? true)
+            @livewire('navigation')
+        @endif
         <main>
             {{ $slot }}
         </main>
-        <x-footer />
-
+        @if($showFooter ?? true)
+            <x-footer />
+        @endif
         @livewireScripts
     </body>
 </html>

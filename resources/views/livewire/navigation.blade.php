@@ -28,7 +28,7 @@ new class extends Component {
 } ?>
 
 <header class="relative border-b border-gray-100">
-    <div class="max-w-screen-xl px-4 py-12 mx-auto sm:px-6 lg:px-8 flex items-center justify-between h-16 px-4">
+    <div class="app-container flex items-center justify-between h-16 px-4">
         <div class="flex items-center">
             <a class="flex items-center flex-shrink-0"
                href="{{ url('/') }}"

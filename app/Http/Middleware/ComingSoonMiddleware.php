@@ -5,36 +5,43 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Lunar\Admin\Models\Staff;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Set the "Coming Soon" page
+ * - If Coming Soon mode is completely disabled, proceed normally
+ * - Always allow access to the paths relating to Lunar, Stripe and Livewire components
+ * - Allow Lunar staff members to bypass the "coming soon" page on public webpages
+ * - Render the coming-soon view directly on the root URL
+ * - Redirect any other route attempts back to the splash page
+ */
 class ComingSoonMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // 1. If Coming Soon mode is completely disabled, proceed normally
         if (!config('app.coming_soon', false)) {
             return $next($request);
         }
 
-        // 2. ALWAYS allow access to the Lunar backend paths and Livewire components
-        // Lunar typically routes through '/lunar' or '/hub' depending on your setup
-        if ($request->is('lunar*') || $request->is('hub*') || $request->is('livewire*')) {
+        if (
+            $request->is('lunar*')
+            || $request->is('hub*')
+            || $request->is('livewire*')
+            || $request->is('stripe*')
+        ) {
             return $next($request);
         }
 
-        // 3. ALLOW Lunar Admins to bypass coming soon on public store pages
-        // Lunar uses the 'lunar' or 'lunar:hub' auth guard depending on your package version
-        if (auth()->user() instanceof Staff) {
+        if (Auth::guard('staff')->check()) {
             return $next($request);
+            // $staff = Auth::guard('staff')->user();
+            // if ($staff->admin) {}
         }
 
-        // 4. Render the coming-soon view directly on the root URL
         if ($request->is('/')) {
             return response()->view('coming-soon');
         }
 
-        // 5. Redirect any other route attempts back to the splash page
         return redirect('/');
     }
 }

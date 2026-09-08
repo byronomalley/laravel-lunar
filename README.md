@@ -1,7 +1,3 @@
-# mamicha77s
-
-Ebay site: https://www.ebay.co.uk/usr/mamicha77s
-
 this is a larvel/livewire app with 
 
 - laravel v12
