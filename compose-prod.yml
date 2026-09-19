@@ -67,9 +67,14 @@ services:
     restart: unless-stopped
     volumes:
       - 'laravel-db-mariadb:/var/lib/mysql'
-      - './docker/mariadb/mariadb-production.cnf:/etc/mysql/conf.d/custom.cnf:ro'
+      - './docker/production/mariadb/mariadb-production.cnf:/etc/mysql/conf.d/custom.cnf:ro'
+      - './docker/production/mariadb/sysctl.cnf:/etc/sysctl.conf:ro'
     networks:
       - laravel-production
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     healthcheck:
       test:
         - CMD

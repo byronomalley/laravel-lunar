@@ -210,7 +210,7 @@ class extends Component
             $this->getAddressValidation($type)
         );
 
-        $address = $validatedData[$type];
+        $address = $this->prepareAddress($validatedData[$type]);
 
         if ($type == 'billing') {
             $this->cart->setBillingAddress($address);
@@ -308,7 +308,26 @@ class extends Component
             "{$type}.contact_phone" => 'nullable',
         ];
     }
+
+    /**
+     * Ensure address is formatted in a way that doesn't break front-end scripts
+     * Example: users might use apostrophes in their names which can break single-line quotes
+     * @param array $address
+     * @return array
+     */
+    protected function prepareAddress(array $address): array
+    {
+        $processedAddress = [];
+        foreach($address as $key => $value) {
+            $processedAddress[$key] = addcslashes($value, "'\\");
+        }
+        return $processedAddress;
+    }
 } ?>
+
+@assets
+    <script src="https://js.stripe.com/v3/" defer></script>
+@endassets
 
 <div>
     <div class="app-container">
