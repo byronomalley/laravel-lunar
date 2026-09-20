@@ -23,12 +23,13 @@ class ComingSoonMiddleware
             return $next($request);
         }
 
-        if (
-            $request->is('lunar*')
-            || $request->is('hub*')
-            || $request->is('livewire*')
-            || $request->is('stripe*')
-        ) {
+        if ($request->is(
+            'google*',
+            'hub*',
+            'livewire*',
+            'lunar*',
+            'stripe*'
+        )) {
             return $next($request);
         }
 
