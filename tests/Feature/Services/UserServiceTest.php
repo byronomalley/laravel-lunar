@@ -1,10 +1,11 @@
 <?php
 
 use App\Services\UserService;
+use Lunar\Admin\Models\Staff;
 
 describe('UserService', function () {
     beforeEach(function () {
-        $this->service = new UserService();
+        $this->service = new UserService;
     });
 
     it('registers a staff member', function () {
@@ -33,7 +34,7 @@ describe('UserService', function () {
             'password_confirmation' => $password2,
             'admin' => true,
         ]);
-        expect($user1)->toBeInstanceOf(\Lunar\Admin\Models\Staff::class)
+        expect($user1)->toBeInstanceOf(Staff::class)
             ->and($user1->first_name)->toBe($firstName)
             ->and($user1->last_name)->toBe($lastName)
             ->and($user1->email)->toBe($email)
@@ -42,7 +43,6 @@ describe('UserService', function () {
             ->and($user2->first_name)->toBe($firstName2)
             ->and($user2->last_name)->toBe($lastName2)
             ->and($user2->email)->toBe($email2)
-            ->and($user2->admin)->toBeTrue()
-        ;
+            ->and($user2->admin)->toBeTrue();
     });
 });

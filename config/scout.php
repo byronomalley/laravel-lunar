@@ -1,5 +1,7 @@
 <?php
 
+use Lunar\Models\Product;
+
 return [
 
     /*
@@ -140,7 +142,7 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            \Lunar\Models\Product::class => [
+            Product::class => [
                 'filterableAttributes' => [
                     'brand',
                     'status',

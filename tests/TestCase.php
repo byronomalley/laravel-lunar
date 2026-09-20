@@ -9,6 +9,8 @@ use Lunar\Database\Seeders\TestingSeeder;
 abstract class TestCase extends BaseTestCase
 {
     use LazilyRefreshDatabase;
+
     protected bool $seed = true;
+
     protected string $seeder = TestingSeeder::class;
 }
