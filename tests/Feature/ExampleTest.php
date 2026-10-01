@@ -7,21 +7,19 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
     public function test_the_application_returns_a_successful_response(): void
     {
-        // Option A: Stop Laravel from hiding the real error/redirect reason
+        config(['app.coming_soon' => false]);
         $this->withoutExceptionHandling();
-
-        // Option B: See the exact URL it is redirecting to
-
         $response = $this->get('/');
+        $response->assertRedirect('/collections/main');
+    }
 
-//        dd($response->headers->get('Location'));
-
-
-        $response->assertStatus(200);
+    public function test_coming_soon_middleware(): void
+    {
+        config(['app.coming_soon' => true]);
+        $this->withoutExceptionHandling();
+        $response = $this->get('/collections/main');
+        $response->assertRedirect('/');
     }
 }
