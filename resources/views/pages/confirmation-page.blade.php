@@ -20,7 +20,6 @@ class extends Component
         $this->cart = CartSession::current();
         if (! $this->cart || ! $this->cart->completedOrder) {
             $this->redirect('/');
-
             return;
         }
         $this->order = $this->cart->completedOrder;
