@@ -28,7 +28,8 @@ class ComingSoonMiddleware
             'hub*',
             'livewire*',
             'lunar*',
-            'stripe*'
+            'stripe*',
+            'r.stripe*'
         )) {
             return $next($request);
         }

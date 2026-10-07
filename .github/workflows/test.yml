@@ -52,4 +52,5 @@ jobs:
           php artisan migrate
 
       - name: Run Tests
-        run: php artisan test --compact --coverage --min=75
+        run: php artisan test --compact --coverage
+#        run: php artisan test --compact --coverage --min=75

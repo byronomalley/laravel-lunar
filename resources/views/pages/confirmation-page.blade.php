@@ -1,12 +1,15 @@
 <?php
 
 use Illuminate\View\View;
-use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
 use Lunar\Facades\CartSession;
 use Lunar\Models\Cart;
 use Lunar\Models\Order;
 
-class CheckoutSuccessPage extends Component
+new
+#[Layout('components.layouts.app')]
+class extends Component
 {
     public ?Cart $cart;
 
