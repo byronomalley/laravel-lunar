@@ -56,8 +56,9 @@ class extends Component
 
     /**
      * The payment type we want to use.
+     * @see config/lunar/payments.php
      */
-    public string $paymentType = 'cash-in-hand';
+    public string $paymentType;
 
     /**
      * {@inheritDoc}
@@ -93,9 +94,10 @@ class extends Component
 
     public function mount(): void
     {
+        $this->paymentType = config('lunar.payments.default');
+
         if (! $this->cart = CartSession::current()) {
             $this->redirect('/');
-
             return;
         }
 
@@ -107,7 +109,6 @@ class extends Component
 
             if ($payment->success) {
                 redirect()->route('checkout-success.view');
-
                 return;
             }
         }
@@ -262,7 +263,6 @@ class extends Component
 
         if ($payment->success) {
             redirect()->route('checkout-success.view');
-
             return;
         }
 
