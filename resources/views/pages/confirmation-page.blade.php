@@ -17,24 +17,24 @@ class extends Component
 
     public function mount(): void
     {
-        $this->cart = CartSession::current();
-        if (! $this->cart || ! $this->cart->completedOrder) {
+        $order = Order::whereNotNull('placed_at')
+            ->find(session('completed_order_id'));
+
+        if (! $order) {
             $this->redirect('/');
             return;
         }
-        $this->order = $this->cart->completedOrder;
+
+        $this->order = $order;
+        session()->forget('completed_order_id');
 
         CartSession::forget();
     }
 } ?>
 
-<section class="bg-white">
+<section class="bg-white" data-cart-id="{{$cart ? $cart->id : 0}}" data-order-id="{{$order ? $order->id : 0}}">
     <div class="max-w-screen-xl px-4 py-32 mx-auto sm:px-6 lg:px-8 lg:py-48">
         <div class="max-w-xl mx-auto text-center">
-            <span class="text-xs font-medium text-center bg-orange-100 text-orange-700 px-3 py-1.5 rounded-lg">
-                This was a test order
-            </span>
-
             <h1 class="mt-8 text-3xl font-extrabold sm:text-5xl">
                 <span class="block"
                       role="img">

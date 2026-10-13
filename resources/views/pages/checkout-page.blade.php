@@ -108,6 +108,7 @@ class extends Component
             ])->authorize();
 
             if ($payment->success) {
+                session(['completed_order_id' => $payment->orderId ?? $this->cart->fresh()->completedOrder?->id]);
                 redirect()->route('checkout-success.view');
                 return;
             }
@@ -329,7 +330,7 @@ class extends Component
     <script src="https://js.stripe.com/v3/" defer></script>
 @endassets
 
-<div>
+<div data-cart-id="{{$cart ? $cart->id : 0}}">
     <div class="app-container">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
             <div class="px-6 py-8 space-y-4 bg-white border border-gray-100 lg:sticky lg:top-8 rounded-xl lg:order-last">
