@@ -1,6 +1,14 @@
 https://github.com/Azure/DevOps-Self-Hosted
 https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners
 
+Deployer Github actions (CI/CD): https://deployer.org/docs/8.x/ci-cd
+Managing SSHkeys: https://www.apono.io/blog/managing-gitlab-ssh-keys/
+GitLab CI pipeline: https://dev.to/aws-builders/gitlab-ci-pipeline-run-script-via-ssh-to-remote-server-49l0
+How to Deploy a Laravel Project: https://deployer.org/docs/7.x/recipe/laravel
+Mastering Zero-Downtime Deployments with Laravel Deployer: https://dev.to/abbeymaniak/mastering-zero-downtime-deployments-with-laravel-deployer-18f3
+Deployer - Laravel News: https://laravel-news.com/deployer
+
+
 I'm working on a zero downtime deployment strategy for a laravel application.
 
 I would prefer to avoid running composer and npm commands on the server. in the past, i have 
