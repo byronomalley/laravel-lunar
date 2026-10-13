@@ -1,23 +1,40 @@
-name: Deploy
+name: deploy
 
 on:
-  workflow_run:
-    workflows:
-      - Laravel Pint
-    types:
-      - completed
-  release: # listen for releases to main branch (as implied by the Laravel Pint workflow)
-    types:
-      - published
+  push:
+    branches: [master]
 
+concurrency: production_environment
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'workflow_run' && 'staging' || 'production' }}
-
     steps:
-      - name: Deploy to Forge
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm ci && npm run build
+      - run: php artisan test
+
+      # production-only vendor dir is what gets shipped
+      - run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Deploy
+        uses: deployphp/action@v1
         env:
-          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
-        run: echo $DEPLOY_URL
+          DEPLOY_HOSTNAME: ${{ secrets.DEPLOY_HOSTNAME }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          dep: deploy
