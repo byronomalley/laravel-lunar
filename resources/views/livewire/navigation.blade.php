@@ -36,7 +36,7 @@ new class extends Component {
             >
                 <span class="sr-only">Home</span>
 
-                <x-brand.logo class="w-auto h-6 text-indigo-600" />
+                <x-brand.logo class="w-auto h-6 text-indigo-600" textClass="hidden sm:inline" />
             </a>
 
             <nav class="hidden lg:gap-4 lg:flex lg:ml-8">
