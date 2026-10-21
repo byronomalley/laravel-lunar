@@ -28,7 +28,9 @@ host('production')
     ->set('deploy_path', getenv('DEPLOY_PATH'));
 
 // replace "git clone" with "rsync the built artefact"
-task('deploy:update_code', ['rsync']);
+task('deploy:update_code', function () {
+    invoke('rsync');
+});
 
 // no composer on the server
 task('deploy:vendors', function () {});
