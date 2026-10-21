@@ -6,6 +6,8 @@ require 'recipe/laravel.php';
 require 'contrib/rsync.php';
 
 set('http_user', getenv('DEPLOY_SSH_USER'));
+set('writable_mode', 'skip');
+
 set('bin/php', '/usr/local/bin/php');
 set('allow_anonymous_stats', false);
 
