@@ -2,17 +2,52 @@
 
 namespace Deployer;
 
+/**
+ * Load the official Laravel recipe
+ */
 require 'recipe/laravel.php';
+
+/**
+ * Load the rsync recipe
+ */
 require 'contrib/rsync.php';
 
-set('http_user', getenv('DEPLOY_SSH_USER'));
-set('writable_mode', 'skip');
+/**
+ * Name of current user who is running deploy. If not set will try automatically get git user name, otherwise output of whoami command.
+ */
+set('user', getenv('DEPLOY_SSH_USER'));
 
-set('bin/php', '/usr/local/bin/php');
-set('allow_anonymous_stats', false);
 
-// what gets sent: the built tree on the runner
+/**
+ * Number of releases to keep in folder
+ */
+set('keep_releases', 10);
+
+
+/**
+ * Skip writable mode, because
+ *
+ * The Laravel recipe defaults writable_mode to acl, and your server doesn’t have setfacl.
+ * You could install it (apt-get install acl), but that needs sudo, and you don’t need ACLs for this setup.
+ *
+ * Install setfacl?
+ */
+//set('writable_mode', 'skip');
+
+/**
+ * Path to php binaries
+ */
+//set('bin/php', '/usr/local/bin/php');
+// set('bin/php', 'docker compose -f {{deploy_path}}/docker-compose.yml exec -T -u www-data -w {{release_or_current_path}} {{docker_service}} php');
+
+/**
+ * The source directory to be rsynced
+ */
 set('rsync_src', __DIR__);
+
+/**
+ * Rsync config
+ */
 set('rsync', [
     'exclude' => [
         '.git', '.github', 'node_modules', 'tests',
@@ -25,9 +60,18 @@ set('rsync', [
     'filter-file' => false,
     'filter-perdir' => false,
     'flags' => 'rz',
-    'options' => ['delete'],
+    'options' => [
+        'delete',
+        'delete-after',
+        'force'
+    ],
     'timeout' => 300,
 ]);
+
+// replace "git clone" with "rsync the built artefact"
+task('deploy:update_code', function () {
+    invoke('rsync');
+});
 
 host('production')
     ->set('labels', ['stage' => 'production'])
