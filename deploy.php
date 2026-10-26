@@ -46,7 +46,7 @@ set('keep_releases', 10);
 set('rsync_src', __DIR__);
 
 /**
- * Rsync config
+ * Rsync config test
  */
 set('rsync', [
     'exclude' => [
