@@ -70,6 +70,19 @@ set('rsync', [
     'timeout' => 300,
 ]);
 
+add('writable_dirs', [
+    'bootstrap/cache',
+    'storage',
+    'storage/app',
+    'storage/app/public',
+    'storage/framework',
+    'storage/framework/cache',
+    'storage/framework/cache/data',
+    'storage/framework/sessions',
+    'storage/framework/views',
+    'storage/logs',
+]);
+
 // replace "git clone" with "rsync the built artefact"
 task('deploy:update_code', function () {
     invoke('rsync');
