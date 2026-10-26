@@ -50,6 +50,8 @@ set('rsync_src', __DIR__);
  */
 set('rsync', [
     'exclude' => [
+        '.azure', '.editorconfig', '.env.example', '.git', '.gitignore', '.gitattributes',
+        'documentation',
         '.git', '.github', 'node_modules', 'tests',
         '.env', '/storage', 'deploy.php',
     ],
@@ -79,12 +81,12 @@ host('production')
     ->set('remote_user', getenv('DEPLOY_SSH_USER'))
     ->set('deploy_path', getenv('DEPLOY_PATH'));
 
-// replace "git clone" with "rsync the built artefact"
+// Replace "git clone" with "rsync the built artefact"
 task('deploy:update_code', function () {
     invoke('rsync');
 });
 
-// no composer on the server
+// No composer on the server: vendor/ is built in CI and shipped
 task('deploy:vendors', function () {});
 
 after('deploy:failed', 'deploy:unlock');
