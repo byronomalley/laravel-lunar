@@ -17,12 +17,10 @@ require 'contrib/rsync.php';
  */
 set('user', getenv('DEPLOY_SSH_USER'));
 
-
 /**
  * Number of releases to keep in folder
  */
 set('keep_releases', 10);
-
 
 /**
  * Skip writable mode, because
@@ -32,12 +30,12 @@ set('keep_releases', 10);
  *
  * Install setfacl?
  */
-//set('writable_mode', 'skip');
+// set('writable_mode', 'skip');
 
 /**
  * Path to php binaries
  */
-//set('bin/php', '/usr/local/bin/php');
+// set('bin/php', '/usr/local/bin/php');
 // set('bin/php', 'docker compose -f {{deploy_path}}/docker-compose.yml exec -T -u www-data -w {{release_or_current_path}} {{docker_service}} php');
 
 /**
@@ -65,7 +63,7 @@ set('rsync', [
     'options' => [
         'delete',
         'delete-after',
-        'force'
+        'force',
     ],
     'timeout' => 300,
 ]);

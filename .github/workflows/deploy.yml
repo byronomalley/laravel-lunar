@@ -2,7 +2,10 @@ name: deploy
 
 on:
   push:
-    branches: [main, feature/deployment]
+    branches: [
+      main,
+#      feature/deployment
+    ]
 
 concurrency: production_environment
 

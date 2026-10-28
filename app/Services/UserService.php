@@ -5,18 +5,19 @@ namespace App\Services;
 use App\Exceptions\CustomerRegistrationException;
 use App\Exceptions\StaffRegistrationException;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Lunar\Admin\Models\Staff;
 use Lunar\Models\Customer;
 use Nette\Schema\ValidationException;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class UserService
 {
     /**
      * Register a customer
+     *
      * @throws ValidationException
      * @throws CustomerRegistrationException
      */
@@ -31,7 +32,7 @@ class UserService
 
         if ($v->fails()) {
             $errMsg = implode(', ', $v->errors()->all());
-            throw new ValidationException('Validation error: ' . $errMsg);
+            throw new ValidationException('Validation error: '.$errMsg);
         }
 
         $vData = $v->validate();
@@ -39,7 +40,7 @@ class UserService
         try {
             return DB::transaction(function () use ($vData) {
                 $user = User::create([
-                    'name' => $vData['first_name'] . ' ' . $vData['last_name'],
+                    'name' => $vData['first_name'].' '.$vData['last_name'],
                     'email' => $vData['email'],
                     'password' => Hash::make($vData['password']),
                 ]);
@@ -61,6 +62,7 @@ class UserService
 
     /**
      * Register a staff member
+     *
      * @throws ValidationException
      * @throws StaffRegistrationException
      */
@@ -76,7 +78,7 @@ class UserService
 
         if ($v->fails()) {
             $errMsg = implode(', ', $v->errors()->all());
-            throw new ValidationException('Validation error: ' . $errMsg);
+            throw new ValidationException('Validation error: '.$errMsg);
         }
 
         $vData = $v->validate();
@@ -84,10 +86,10 @@ class UserService
         try {
             return Staff::create([
                 'first_name' => $vData['first_name'],
-                'last_name'  => $vData['last_name'],
-                'email'      => $vData['email'],
-                'password'   => Hash::make($vData['password']),
-                'admin'      => $vData['admin'], // Gives full global administrative overrides
+                'last_name' => $vData['last_name'],
+                'email' => $vData['email'],
+                'password' => Hash::make($vData['password']),
+                'admin' => $vData['admin'], // Gives full global administrative overrides
             ]);
         } catch (Throwable $e) {
             throw new StaffRegistrationException($e);
