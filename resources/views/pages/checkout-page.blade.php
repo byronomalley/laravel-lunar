@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Lunar\Facades\CartSession;
@@ -109,7 +107,7 @@ class extends Component {
 
             if ($payment->success) {
                 session(['completed_order_id' => $payment->orderId ?? $this->cart->fresh()->completedOrder?->id]);
-                redirect()->route('checkout-success.view');
+                $this->redirectRoute('checkout-success.view');
                 return;
             }
         }
@@ -254,16 +252,15 @@ class extends Component {
 
     /**
      * Checkout
-     * @return RedirectResponse
      */
-    public function checkout(): RedirectResponse
+    public function checkout(): void
     {
-        $payment = Payments::cart($this->cart)->withData([
+        Payments::cart($this->cart)->withData([
             'payment_intent_client_secret' => $this->payment_intent_client_secret,
             'payment_intent' => $this->payment_intent,
         ])->authorize();
 
-        return redirect()->route('checkout-success.view');
+        $this->redirectRoute('checkout-success.view');
     }
 
     /**
