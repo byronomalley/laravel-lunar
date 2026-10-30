@@ -33,7 +33,7 @@ new class extends Component {
     <input name="search"
            type="search"
            placeholder="Search for products"
-           class="w-full pl-10 text-sm border-2 border-gray-100 rounded-lg"
+           class="w-full pl-10 text-sm border-2 border-gray-100 rounded-lg p-2"
            wire:model.live.debounce.150ms="search" {{-- Livewire handles timing and execution now --}}
            @click="linesVisible = true"
     />
@@ -70,12 +70,12 @@ new class extends Component {
                     <li>
                         <a href="{{ route('product.view', $result->defaultUrl->slug) }}" class="flex">
                             @if ($result->thumbnail)
-                                <img class="object-cover w-1/3 overflow-hidden rounded-lg aspect-w-1 aspect-h-1"
+                                <img class="object-cover w-1/4 overflow-hidden rounded-lg aspect-w-1 aspect-h-1"
                                      src="{{ $result->thumbnail->getUrl() }}"
                                      alt="{{ $result->translateAttribute('name') }}"
                                 />
                             @endif
-                            <p>{{ $result->variants->first()?->sku . ' ' . $result->translateAttribute('name') }}</p>
+                            <p class="w-3/4 p-2 text-sm">{{ $result->variants->first()?->sku . ' ' . $result->translateAttribute('name') }}</p>
                         </a>
                     </li>
                 @endforeach

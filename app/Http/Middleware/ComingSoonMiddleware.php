@@ -19,7 +19,7 @@ class ComingSoonMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!config('app.coming_soon', false)) {
+        if (! config('app.coming_soon', false)) {
             return $next($request);
         }
 
@@ -28,7 +28,8 @@ class ComingSoonMiddleware
             'hub*',
             'livewire*',
             'lunar*',
-            'stripe*'
+            'stripe*',
+            'r.stripe*'
         )) {
             return $next($request);
         }

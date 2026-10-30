@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Lunar\Base\Traits\LunarUser;
-use Lunar\Base\LunarUser as LunarUserInterface;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Lunar\Base\LunarUser as LunarUserInterface;
+use Lunar\Base\Traits\LunarUser;
 
 class User extends Authenticatable implements LunarUserInterface
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, LunarUser;
+    use HasFactory, LunarUser, Notifiable;
 
     /**
      * The attributes that are mass assignable.

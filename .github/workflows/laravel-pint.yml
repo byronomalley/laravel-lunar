@@ -30,8 +30,6 @@ jobs:
         with:
           php-version: '8.4'
           php-extensions: 'json, dom, curl, libxml, mbstring'
-          nova-email: ${{ secrets.NOVA_EMAIL }}
-          nova-password: ${{ secrets.NOVA_PASSWORD }}
 
       - name: Setup PHP and Composer
         uses: shivammathur/setup-php@2.35.5
