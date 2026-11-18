@@ -3,19 +3,19 @@
 namespace Deployer;
 
 /**
- * Load the official Laravel recipe
+ * Atomic Laravel deployment of a pre-built CI artifact.
+ *
+ * This file is run from inside the extracted build artifact (see .azure/templates/deploy.yml
+ * and .github/workflows/deploy.yml). The artifact already contains production vendor/ and
+ * compiled public/build assets, so neither Composer nor npm runs on the server: the release is
+ * rsynced into releases/N, shared .env and storage are linked, Laravel is optimised and migrated,
+ * and the "current" symlink is switched in one step.
+ *
+ * Required environment: DEPLOY_HOSTNAME, DEPLOY_SSH_USER, DEPLOY_PATH.
+ * Optional: DEPLOY_STAGE (host alias and "stage" label, defaults to "production").
  */
 require 'recipe/laravel.php';
-
-/**
- * Load the rsync recipe
- */
 require 'contrib/rsync.php';
-
-/**
- * Name of current user who is running deploy. If not set will try automatically get git user name, otherwise output of whoami command.
- */
-set('user', getenv('DEPLOY_SSH_USER'));
 
 /**
  * Number of releases to keep in folder
@@ -23,12 +23,8 @@ set('user', getenv('DEPLOY_SSH_USER'));
 set('keep_releases', 10);
 
 /**
- * Skip writable mode, because
- *
- * The Laravel recipe defaults writable_mode to acl, and your server doesn’t have setfacl.
- * You could install it (apt-get install acl), but that needs sudo, and you don’t need ACLs for this setup.
- *
- * Install setfacl?
+ * The Laravel recipe defaults writable_mode to acl, which needs setfacl on the server.
+ * Uncomment if the server does not have the acl package installed.
  */
 // set('writable_mode', 'skip');
 
@@ -36,22 +32,20 @@ set('keep_releases', 10);
  * Path to php binaries
  */
 // set('bin/php', '/usr/local/bin/php');
-// set('bin/php', 'docker compose -f {{deploy_path}}/docker-compose.yml exec -T -u www-data -w {{release_or_current_path}} {{docker_service}} php');
 
 /**
- * The source directory to be rsynced
+ * The source directory to be rsynced: the extracted artifact this file ships in.
  */
 set('rsync_src', __DIR__);
 
 /**
- * Rsync config
+ * Rsync config. The artifact is already pruned in CI; these excludes are a safety net.
  */
 set('rsync', [
     'exclude' => [
-        '.azure', '.editorconfig', '.env.example', '.git', '.gitignore', '.gitattributes',
-        'documentation',
-        '.git', '.github', 'node_modules', 'tests',
-        '.env', '/storage', 'deploy.php',
+        '.azure', '.editorconfig', '.env', '.env.example', '.git', '.github', '.gitignore', '.gitattributes',
+        'documentation', 'node_modules', 'tests',
+        '/storage', 'deploy.php',
     ],
     'exclude-file' => false,
     'include' => [],
@@ -81,23 +75,24 @@ add('writable_dirs', [
     'storage/logs',
 ]);
 
-// replace "git clone" with "rsync the built artefact"
-task('deploy:update_code', function () {
-    invoke('rsync');
-});
+$stage = getenv('DEPLOY_STAGE') ?: 'production';
 
-host('production')
-    ->set('labels', ['stage' => 'production'])
+host($stage)
+    ->set('labels', ['stage' => $stage])
     ->set('hostname', getenv('DEPLOY_HOSTNAME'))
     ->set('remote_user', getenv('DEPLOY_SSH_USER'))
     ->set('deploy_path', getenv('DEPLOY_PATH'));
 
-// Replace "git clone" with "rsync the built artefact"
+/**
+ * Replace "git clone" with "rsync the built artifact"
+ */
 task('deploy:update_code', function () {
     invoke('rsync');
 });
 
-// No composer on the server: vendor/ is built in CI and shipped
+/**
+ * No Composer on the server: vendor/ is built in CI and shipped in the artifact
+ */
 task('deploy:vendors', function () {});
 
 after('deploy:failed', 'deploy:unlock');
