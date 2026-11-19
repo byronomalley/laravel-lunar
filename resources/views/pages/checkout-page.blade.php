@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Lunar\Facades\CartSession;
@@ -12,8 +11,7 @@ use Lunar\Models\Country;
 
 new
 #[Layout('components.layouts.app')]
-class extends Component
-{
+class extends Component {
     /**
      * The Cart instance.
      */
@@ -56,8 +54,9 @@ class extends Component
 
     /**
      * The payment type we want to use.
+     * @see config/lunar/payments.php
      */
-    public string $paymentType = 'cash-in-hand';
+    public string $paymentType;
 
     /**
      * {@inheritDoc}
@@ -93,9 +92,10 @@ class extends Component
 
     public function mount(): void
     {
-        if (! $this->cart = CartSession::current()) {
-            $this->redirect('/');
+        $this->paymentType = config('lunar.payments.default');
 
+        if (!$this->cart = CartSession::current()) {
+            $this->redirect('/');
             return;
         }
 
@@ -106,8 +106,8 @@ class extends Component
             ])->authorize();
 
             if ($payment->success) {
-                redirect()->route('checkout-success.view');
-
+                session(['completed_order_id' => $payment->orderId ?? $this->cart->fresh()->completedOrder?->id]);
+                $this->redirectRoute('checkout-success.view');
                 return;
             }
         }
@@ -188,7 +188,7 @@ class extends Component
     {
         $shippingAddress = $this->cart->shippingAddress;
 
-        if (! $shippingAddress) {
+        if (!$shippingAddress) {
             return;
         }
 
@@ -212,7 +212,7 @@ class extends Component
 
         $address = $this->prepareAddress($validatedData[$type]);
 
-        if ($type == 'billing') {
+        if ($type === 'billing') {
             $this->cart->setBillingAddress($address);
             $this->billing = $this->cart->billingAddress->only(
                 $this->cart->billingAddress->getFillable()
@@ -220,7 +220,7 @@ class extends Component
             $this->billing['country'] = $this->cart->billingAddress->country;
         }
 
-        if ($type == 'shipping') {
+        if ($type === 'shipping') {
             $this->cart->setShippingAddress($address);
             $this->shipping = $this->cart->shippingAddress->only(
                 $this->cart->shippingAddress->getFillable()
@@ -244,29 +244,23 @@ class extends Component
      */
     public function saveShippingOption(): void
     {
-        $option = $this->shippingOptions->first(fn ($option) => $option->getIdentifier() == $this->chosenShipping);
-
+        $option = $this->shippingOptions->first(fn($option) => $option->getIdentifier() == $this->chosenShipping);
         CartSession::setShippingOption($option);
-
         $this->refreshCart();
-
         $this->determineCheckoutStep();
     }
 
-    public function checkout()
+    /**
+     * Checkout
+     */
+    public function checkout(): void
     {
-        $payment = Payments::cart($this->cart)->withData([
+        Payments::cart($this->cart)->withData([
             'payment_intent_client_secret' => $this->payment_intent_client_secret,
             'payment_intent' => $this->payment_intent,
         ])->authorize();
 
-        if ($payment->success) {
-            redirect()->route('checkout-success.view');
-
-            return;
-        }
-
-        return redirect()->route('checkout-success.view');
+        $this->redirectRoute('checkout-success.view');
     }
 
     /**
@@ -318,7 +312,7 @@ class extends Component
     protected function prepareAddress(array $address): array
     {
         $processedAddress = [];
-        foreach($address as $key => $value) {
+        foreach ($address as $key => $value) {
             $processedAddress[$key] = addcslashes($value, "'\\");
         }
         return $processedAddress;
@@ -329,10 +323,11 @@ class extends Component
     <script src="https://js.stripe.com/v3/" defer></script>
 @endassets
 
-<div>
+<div data-cart-id="{{$cart ? $cart->id : 0}}">
     <div class="app-container">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
-            <div class="px-6 py-8 space-y-4 bg-white border border-gray-100 lg:sticky lg:top-8 rounded-xl lg:order-last">
+            <div
+                class="px-6 py-8 space-y-4 bg-white border border-gray-100 lg:sticky lg:top-8 rounded-xl lg:order-last">
                 <h3 class="font-medium">
                     Order Summary
                 </h3>
@@ -343,7 +338,7 @@ class extends Component
                             <div class="flex items-center py-4"
                                  wire:key="cart_line_{{ $line->id }}">
                                 <img class="object-cover w-16 h-16 rounded"
-                                     src="{{ $line->purchasable->getThumbnail()->getUrl() }}"  alt=""/>
+                                     src="{{ $line->purchasable->getThumbnail()->getUrl() }}" alt=""/>
 
                                 <div class="flex-1 ml-4">
                                     <p class="text-sm font-medium max-w-[35ch]">

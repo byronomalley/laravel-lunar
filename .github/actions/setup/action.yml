@@ -10,12 +10,6 @@ inputs:
     description: The PHP extensions you want to install.
     required: false
     default: dom, curl, libxml, mbstring, zip, pcntl, pdo, odbc, pdo_odbc, :php-psr
-  nova-email: # ${{ secrets.NOVA_EMAIL }} # You don't have access to secrets or variables in composite actions, so we use inputs
-    description: The email address for Laravel Nova authentication.
-    required: true
-  nova-password:
-    description: The password for Laravel Nova authentication.
-    required: true
   coverage:
     description: The coverage driver to use.
     required: false
@@ -65,11 +59,3 @@ runs:
         path: ${{ steps.composer-cache-dir.outputs.dir }}
         key: composer-cache-${{ hashFiles('**/composer.lock') }}
         restore-keys: composer-cache-
-
-    - name: Authenticate Nova
-      env:
-        # You don't have access to secrets or variables in composite actions, so we use inputs
-        NOVA_PASSWORD: ${{ inputs.nova-password }}
-        NOVA_EMAIL: ${{ inputs.nova-email }}
-      run: composer config http-basic.nova.laravel.com "NOVA_EMAIL" "$NOVA_PASSWORD"
-      shell: bash

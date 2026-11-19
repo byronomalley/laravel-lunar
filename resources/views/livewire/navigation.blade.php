@@ -30,14 +30,7 @@ new class extends Component {
 <header class="relative border-b border-gray-100">
     <div class="app-container flex items-center justify-between h-16 px-4">
         <div class="flex items-center">
-            <a class="flex items-center flex-shrink-0"
-               href="{{ url('/') }}"
-               wire:navigate
-            >
-                <span class="sr-only">Home</span>
-
-                <x-brand.logo class="w-auto h-6 text-indigo-600" />
-            </a>
+            <x-brand.logo-link />
 
             <nav class="hidden lg:gap-4 lg:flex lg:ml-8">
                 @foreach ($this->collections as $collection)

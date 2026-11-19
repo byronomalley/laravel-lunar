@@ -1,0 +1,22 @@
+{
+    "agents": [
+        "junie",
+        "opencode",
+        "claude_code",
+        "kiro"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "sail": true,
+    "skills": [
+        "infer-conventions",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "scout-development",
+        "livewire-development",
+        "volt-development",
+        "tailwindcss-development"
+    ]
+}

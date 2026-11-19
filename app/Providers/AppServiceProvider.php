@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         LunarPanel::register();
         LunarPanel::panel(function (Panel $panel) {
-            return $panel->plugin(new ShippingPlugin());
+            return $panel->plugin(new ShippingPlugin);
         })->register();
     }
 
@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        if(!config('app.lunar_telemetry')) {
+        if (! config('app.lunar_telemetry')) {
             Telemetry::optOut();
         }
     }

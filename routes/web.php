@@ -1,9 +1,9 @@
 <?php
 
-use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
-//Volt::route('/', 'welcome')->name('home');
+// Volt::route('/', 'welcome')->name('home');
 
 Route::get('/', function () {
     return redirect('/collections/main');

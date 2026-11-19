@@ -1,6 +1,16 @@
 <?php
 
+use App\Mail\AwaitingPayment;
+use App\Mail\OrderDispatched;
+use App\Mail\PaymentOffline;
+use App\Mail\PaymentReceived;
 use Lunar\Base\OrderReferenceGenerator;
+use Lunar\Pipelines\Order\Creation\CleanUpOrderLines;
+use Lunar\Pipelines\Order\Creation\CreateOrderAddresses;
+use Lunar\Pipelines\Order\Creation\CreateOrderLines;
+use Lunar\Pipelines\Order\Creation\CreateShippingLine;
+use Lunar\Pipelines\Order\Creation\FillOrderFromCart;
+use Lunar\Pipelines\Order\Creation\MapDiscountBreakdown;
 
 return [
     /*
@@ -65,7 +75,9 @@ return [
         'awaiting-payment' => [
             'label' => 'Awaiting Payment',
             'color' => '#848a8c',
-            'mailers' => [],
+            'mailers' => [
+                AwaitingPayment::class,
+            ],
             'notifications' => [],
             'favourite' => true,
         ],
@@ -73,7 +85,9 @@ return [
         'payment-offline' => [
             'label' => 'Payment Offline',
             'color' => '#0A81D7',
-            'mailers' => [],
+            'mailers' => [
+                PaymentOffline::class,
+            ],
             'notifications' => [],
             'favourite' => true,
         ],
@@ -81,14 +95,18 @@ return [
         'payment-received' => [
             'label' => 'Payment Received',
             'color' => '#6a67ce',
-            'mailers' => [],
+            'mailers' => [
+                PaymentReceived::class,
+            ],
             'notifications' => [],
             'favourite' => true,
         ],
 
         'dispatched' => [
             'label' => 'Dispatched',
-            'mailers' => [],
+            'mailers' => [
+                OrderDispatched::class,
+            ],
             'notifications' => [],
             'favourite' => true,
         ],
@@ -109,12 +127,12 @@ return [
     */
     'pipelines' => [
         'creation' => [
-            Lunar\Pipelines\Order\Creation\FillOrderFromCart::class,
-            Lunar\Pipelines\Order\Creation\CreateOrderLines::class,
-            Lunar\Pipelines\Order\Creation\CreateOrderAddresses::class,
-            Lunar\Pipelines\Order\Creation\CreateShippingLine::class,
-            Lunar\Pipelines\Order\Creation\CleanUpOrderLines::class,
-            Lunar\Pipelines\Order\Creation\MapDiscountBreakdown::class,
+            FillOrderFromCart::class,
+            CreateOrderLines::class,
+            CreateOrderAddresses::class,
+            CreateShippingLine::class,
+            CleanUpOrderLines::class,
+            MapDiscountBreakdown::class,
         ],
     ],
 

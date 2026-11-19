@@ -1,0 +1,33 @@
+```yml
+name: Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - Laravel Pint
+    types:
+      - completed
+  release: # listen for releases to main branch (as implied by the Laravel Pint workflow)
+    types:
+      - published
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_run' && 'staging' || 'production' }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Deployer
+        run: |
+          mkdir -p ~/.ssh && echo -e "Host *\n    StrictHostKeyChecking no" > ~/.ssh/config
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/config ~/.ssh/id_rsa
+          curl -LO https://github.com/deployphp/deployer/releases/download/v7.3.3/deployer.phar
+          php ./deployer.phar deploy production --revision=${GITHUB_SHA} -o ssh_multiplexing=false -o forward_agent=true
+
+```

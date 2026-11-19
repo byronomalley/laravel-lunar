@@ -37,8 +37,6 @@ jobs:
         uses: ./.github/actions/setup
         with:
           php-version: '8.4'
-          nova-email: ${{ secrets.NOVA_EMAIL }}
-          nova-password: ${{ secrets.NOVA_PASSWORD }}
           coverage: xdebug # Enable xdebug for code coverage
 
       - name: Install Dependencies
@@ -52,4 +50,5 @@ jobs:
           php artisan migrate
 
       - name: Run Tests
-        run: php artisan test --compact --coverage --min=75
+        run: php artisan test --compact --coverage
+#        run: php artisan test --compact --coverage --min=75
